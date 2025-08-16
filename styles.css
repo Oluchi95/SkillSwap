@@ -641,6 +641,29 @@ a {
     font-weight: 600;
 }
 
+#register-modal{
+    height: auto;
+}
+
+#register-modal .form-group {
+    margin-bottom: 10px;
+}
+
+#register-modal .form-group input {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#register-modal .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
 /* Full Width Sections */
 .full-width-section {
     width: 100%;
