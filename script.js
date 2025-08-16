@@ -30,6 +30,7 @@ const addSkillForm = document.getElementById('add-skill-form');
 
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
+const addSkillCategory = document.getElementById('add-skill-category'); // New element
 
 const featuredGrid = document.getElementById('featured-grid');
 
@@ -49,6 +50,7 @@ const backToProfileBtn = document.getElementById('back-to-profile');
 const addMediaBtn = document.getElementById('add-media-btn');
 const attachmentDropdown = document.getElementById('attachment-dropdown');
 const chatRecipientProfileBtn = document.getElementById('chat-recipient-profile-btn');
+const homeLogo = document.getElementById('home-logo');
 
 // State
 let currentUser = null;
@@ -57,6 +59,7 @@ let users = JSON.parse(localStorage.getItem('users')) || [];
 let services = JSON.parse(localStorage.getItem('services')) || [];
 let conversations = JSON.parse(localStorage.getItem('conversations')) || [];
 let currentChat = null;
+let pendingContactId = null; // Store user ID for contact after login
 
 // Initialize the app
 function init() {
@@ -80,16 +83,9 @@ function init() {
 }
 
 function showSection(sectionId) {
-  // Hide all main sections
   document.querySelectorAll('section.main-section').forEach(s => s.style.display = 'none');
   
-  // Hide main landing page sections
   const landingSections = ['hero', 'about-section', 'categories-section', 'featured-section', 'how-it-works', 'cta-section'];
-  landingSections.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-
   if (sectionId === 'home') {
     landingSections.forEach(id => {
       const el = document.getElementById(id);
@@ -97,6 +93,10 @@ function showSection(sectionId) {
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
+    landingSections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
     document.getElementById(sectionId + '-section').style.display = 'block';
   }
 }
@@ -130,6 +130,10 @@ function setupEventListeners() {
   // Search
   searchInput.addEventListener('input', renderFeaturedServices);
   categoryFilter.addEventListener('change', renderFeaturedServices);
+  homeLogo.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection(currentUser ? 'profile' : 'home');
+  });
 
   // Chat
   if (sendMessageBtn) sendMessageBtn.addEventListener('click', sendMessage);
@@ -172,6 +176,25 @@ function setupEventListeners() {
 });
 }
 
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle';
+    toast.innerHTML = `<i class="toast-icon ${icon}"></i> <span>${message}</span>`;
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+
 function showRecipientProfile() {
     const recipientUser = users.find(u => u.id === currentRecipientId);
     if (!recipientUser) {
@@ -179,7 +202,6 @@ function showRecipientProfile() {
         return;
     }
 
-    // Create a temporary "public" profile view
     const publicProfileSection = document.createElement('section');
     publicProfileSection.id = 'public-profile-section';
     publicProfileSection.className = 'main-section';
@@ -204,11 +226,9 @@ function showRecipientProfile() {
         </div>
     `;
 
-    // Append to body and show
     document.body.appendChild(publicProfileSection);
     showSection('public-profile');
 
-    // Render skills
     const publicSkillsList = document.getElementById('public-skills-list');
     recipientUser.skills.forEach(skill => {
         const skillItem = document.createElement('div');
@@ -217,7 +237,6 @@ function showRecipientProfile() {
         publicSkillsList.appendChild(skillItem);
     });
 
-    // Add event listener for the message button on the public profile
     document.getElementById('message-from-profile-btn').addEventListener('click', (e) => {
         e.preventDefault();
         document.body.removeChild(publicProfileSection);
@@ -269,7 +288,6 @@ function handleProfileEdit(e) {
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         localStorage.setItem('users', JSON.stringify(users));
 
-        // Update services data as well
         services.forEach(service => {
             if (service.userId === currentUser.id) {
                 service.providerName = newName;
@@ -280,7 +298,7 @@ function handleProfileEdit(e) {
 
         renderUserProfile();
         hideModals();
-        alert('Profile updated successfully!');
+        showToast("Profile updated successfully! ✨", 'success');
     };
 
     if (newPhotoFile) {
@@ -305,9 +323,21 @@ function handleLogin(e) {
     localStorage.setItem('currentUser', JSON.stringify(user));
     updateNavForLoggedInUser();
     hideModals();
-    showSection('profile');
-    loginForm.reset();
-    renderUserProfile();
+    showToast("Login successful! Redirecting to your dashboard. 🚀", 'success');
+    setTimeout(() => {
+        if (pendingContactId) {
+            const provider = users.find(u => u.id === pendingContactId);
+            if (provider) {
+                currentRecipientId = provider.id;
+                showChatSection(provider.name);
+            }
+            pendingContactId = null;
+        } else {
+            showSection('profile');
+            renderUserProfile();
+        }
+        loginForm.reset();
+    }, 1500);
   } else {
     alert('Invalid credentials');
   }
@@ -350,9 +380,12 @@ function handleRegister(e) {
     localStorage.setItem('currentUser', JSON.stringify(newUser));
     updateNavForLoggedInUser();
     hideModals();
-    showSection('profile');
-    registerForm.reset();
-    renderUserProfile();
+    showToast("Registration successful! Welcome to SkillSwap. 🎉", 'success');
+    setTimeout(() => {
+        showSection('profile');
+        registerForm.reset();
+        renderUserProfile();
+    }, 1500);
   };
   
   if (photoFile) {
@@ -368,6 +401,7 @@ function handleAddSkill(e) {
 
   const skillName = document.getElementById('skill-name').value;
   const skillDesc = document.getElementById('skill-desc').value;
+  const skillCategory = document.getElementById('skill-category').value; // New input
   let skillPrice = document.getElementById('skill-price').value;
 
   // Auto-format price
@@ -376,7 +410,7 @@ function handleAddSkill(e) {
           skillPrice = '₦' + skillPrice;
       }
       if (!skillPrice.includes('/')) {
-          skillPrice += '/project'; // Defaulting to 'per project'
+          skillPrice += '/project';
       }
   } else {
       skillPrice = '₦0';
@@ -388,7 +422,7 @@ function handleAddSkill(e) {
     description: skillDesc,
     price: skillPrice,
     userId: currentUser.id,
-    category: 'other' 
+    category: skillCategory // Use selected category
   };
   
   currentUser.skills.push(newSkill);
@@ -404,6 +438,7 @@ function handleAddSkill(e) {
   renderUserSkills();
   renderFeaturedServices();
   addSkillForm.reset();
+  showToast("Skill added successfully! ✨", 'success');
 }
 
 function updateNavForLoggedInUser() {
@@ -414,7 +449,15 @@ function updateNavForLoggedInUser() {
     <a href="#" class="btn btn-accent" id="logout-btn">Log Out</a>
   `;
   document.getElementById('profile-btn').addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); });
-  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); currentUser = null; localStorage.removeItem('currentUser'); location.reload(); });
+  document.getElementById('logout-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('Are you sure you want to log out?')) {
+      currentUser = null;
+      localStorage.removeItem('currentUser');
+      showSection('home');
+      location.reload();
+    }
+  });
 
   const mobileAuthLinks = document.querySelector('.mobile-auth-links');
   if (mobileAuthLinks) {
@@ -423,7 +466,15 @@ function updateNavForLoggedInUser() {
       <li><a href="#" class="btn btn-accent" id="mobile-logout-btn">Log Out</a></li>
     `;
     document.getElementById('mobile-profile-btn').addEventListener('click', (e) => { e.preventDefault(); mobileMenu.classList.remove('active'); showSection('profile'); });
-    document.getElementById('mobile-logout-btn').addEventListener('click', (e) => { e.preventDefault(); currentUser = null; localStorage.removeItem('currentUser'); location.reload(); });
+    document.getElementById('mobile-logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to log out?')) {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showSection('home');
+            location.reload();
+        }
+    });
   }
 }
 
@@ -469,6 +520,7 @@ function renderUserSkills() {
         localStorage.setItem('services', JSON.stringify(services));
         renderUserSkills();
         renderFeaturedServices();
+        showToast('Skill deleted successfully!', 'info');
       }
     });
   });
@@ -501,6 +553,7 @@ function renderUserSkills() {
               
               renderUserSkills();
               renderFeaturedServices();
+              showToast('Skill updated successfully!', 'info');
           }
       });
   });
@@ -523,12 +576,16 @@ function renderFeaturedServices() {
     return;
   }
 
-  filteredServices.forEach(service => {
+  // New logic: Prioritize recently added services
+  const sortedServices = [...filteredServices].sort((a, b) => b.id.localeCompare(a.id));
+  const displayServices = sortedServices.slice(0, 8); // Show up to 8 featured services
+  
+  displayServices.forEach(service => {
     const serviceCard = document.createElement('div');
     serviceCard.className = 'service-card';
     const contactBtnHtml = currentUser ? 
       `<a href="#" class="contact-btn" data-id="${service.userId}" data-name="${service.providerName}">Contact</a>` :
-      `<a href="#" class="contact-btn login-required">Contact</a>`;
+      `<a href="#" class="contact-btn login-required" data-id="${service.userId}" data-name="${service.providerName}">Contact</a>`;
 
     const formattedPrice = service.price.startsWith('₦') ? service.price.replace('per', '/') : service.price;
 
@@ -548,12 +605,15 @@ function renderFeaturedServices() {
   document.querySelectorAll('.contact-btn').forEach(button => {
     button.addEventListener('click', function(e) {
       e.preventDefault();
+      const providerId = this.getAttribute('data-id');
+      const providerName = this.getAttribute('data-name');
+      
       if (!currentUser) {
+        pendingContactId = providerId;
         showModal('login-modal');
         return;
       }
-      const providerId = this.getAttribute('data-id');
-      const providerName = this.getAttribute('data-name');
+      
       let conversation = conversations.find(conv => (conv.user1 === currentUser.id && conv.user2 === providerId) || (conv.user1 === providerId && conv.user2 === currentUser.id));
       if (!conversation) {
         conversation = { id: generateId(), user1: currentUser.id, user2: providerId, userName1: currentUser.name, userName2: providerName, messages: [] };

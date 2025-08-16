@@ -124,6 +124,56 @@ a {
   text-align: center;
 }
 
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background-color: white;
+    color: var(--dark-color);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateX(120%);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.success {
+    border-left: 5px solid var(--success-color);
+}
+
+.toast.info {
+    border-left: 5px solid var(--info-color);
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+}
+
+.toast.success .toast-icon {
+    color: var(--success-color);
+}
+
+.toast.info .toast-icon {
+    color: var(--info-color);
+}
+
 /* Header Styles */
 .sticky-header {
   position: sticky;
@@ -290,7 +340,7 @@ a {
 }
 
 .stats i {
-    color: #FDCC0D;
+  color: #FDCC0D ;
 }
 
 .stat-number {
@@ -797,7 +847,8 @@ a {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   padding: 10px 15px;
   border: 1px solid #ddd;
@@ -808,6 +859,17 @@ a {
 .form-group input[type="file"] {
     border: none;
     padding: 0;
+}
+
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c5ce7%22%20d%3D%22M287%20117.8l-131-131c-4.4-4.4-11.4-4.4-15.8%200l-131%20131c-4.4%204.4-4.4%2011.4%200%2015.8l6.4%206.4c4.4%204.4%2011.4%204.4%2015.8%200l109.5-109.5%20109.5%20109.5c4.4%204.4%2011.4%204.4%2015.8%200l6.4-6.4c4.4-4.4%204.4-11.4%200-15.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  cursor: pointer;
 }
 
 .form-options {
@@ -838,6 +900,30 @@ a {
   color: var(--primary-color);
   font-weight: 600;
   text-decoration: underline;
+}
+
+/* Adjustments for shorter signup form */
+#register-modal .modal-content {
+    padding: 20px;
+}
+
+#register-modal h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+#register-modal .form-group label {
+    font-size: 0.85rem;
+}
+
+#register-modal .form-group input,
+#register-modal .form-group select {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+#register-modal .btn-primary {
+    padding: 10px 20px;
 }
 
 /* Profile and Chat Sections */
