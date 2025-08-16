@@ -43,303 +43,225 @@
             <a href="#" class="btn btn-outline" id="login-btn">Sign In</a>
             <a href="#" class="btn btn-accent" id="register-btn">Offer a Skill</a>
           </div>
+          <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+          </button>
         </div>
+      </div>
+      <div class="mobile-menu" id="mobile-menu">
+        <nav>
+          <ul>
+            <li><a href="#about-section">About</a></li>
+            <li><a href="#featured-section">Browse</a></li>
+            <li><a href="#categories-section">Categories</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li class="mobile-auth-links">
+                <a href="#" class="btn btn-outline" id="mobile-login-btn">Sign In</a>
+                <a href="#" class="btn btn-accent" id="mobile-register-btn">Offer a Skill</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </header>
 
-    <section class="hero">
-      <div class="container">
-        <div class="hero-content">
-          <div class="short"><i class="fas fa-graduation-cap"></i>Student-to-Student Exchange Platform</div>
-          <h1>Exchange Skills, Build Community</h1>
-          <p>
-            Connect with fellow students to share knowledge, learn new skills, and build lasting relationships. From tutoring to creative projects. Find what you need or offer what you know in a trusted environment.
-          </p>
-          <div class="search-bar-container">
-            <div class="search-bar">
-              <i class="fas fa-search"></i>
-              <input type="text" placeholder="Search for skills, services or students..." id="search-input" />
-              <i class="fas fa-filter"></i>
-              <select id="category-filter">
-                <option value="">All Categories</option>
-                <option value="tutoring">Tutoring & Study Help</option>
-                <option value="design">Graphic Design</option>
-                <option value="programming">Programming</option>
-                <option value="writing">Writing & Content</option>
-                <option value="language">Language Exchange</option>
-                <option value="music">Music & Arts</option>
-              </select>
-              <button class="btn btn-primary" id="search-btn">
-                <i class="fas fa-search"></i> Search
-              </button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="stat-item">
-              <div class="stat-number">2,500+</div>
-              <div class="stat-label">Active Students</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">1,200+</div>
-              <div class="stat-label">Skills Offered</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">95%</div>
-              <div class="stat-label">Successful Rate</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">4.8 <i class="fas fa-star"></i></div>
-              <div class="stat-label">Average Rating</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="about-section" id="about-section">
-      <div class="container">
-        <h2>Why SkillSwap?</h2>
-        <div class="about-cards">
-          <div class="about-card">
-            <div class="card-icon">
-              <i class="fas fa-users"></i>
-            </div>
-            <h3>Student Community</h3>
-            <p>Connect with verified fellow students in a trusted environment where you can safely exchange skills and knowledge.</p>
-          </div>
-          <div class="about-card">
-            <div class="card-icon">
-              <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <h3>Earn & Learn</h3>
-            <p>Monetize your skills while helping others succeed academically and professionally.</p>
-          </div>
-          <div class="about-card">
-            <div class="card-icon">
-              <i class="fas fa-shield-alt"></i>
-            </div>
-            <h3>Safe & Reliable</h3>
-            <p>Student verification and community guidelines ensure a safe and productive exchange environment.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="categories-section" id="categories-section">
-      <div class="container">
-        <div class="section-header">
-          <h2>Explore Categories</h2>
-          <p>Discover the diverse range of skills and services available in our student community</p>
-        </div>
-        <div class="categories-grid">
-          <div class="category-card" data-category="tutoring">
-            <div class="category-icon bg-blue">
-              <i class="fas fa-book-reader"></i>
-            </div>
-            <h3>Tutoring & Study Help</h3>
-            <p>Get help with coursework, exam prep, and academic subjects</p>
-            <span class="pill">42 services</span>
-          </div>
-          <div class="category-card" data-category="design">
-            <div class="category-icon bg-purple">
-              <i class="fas fa-paint-brush"></i>
-            </div>
-            <h3>Graphic Design</h3>
-            <p>Logos, flyers, social media graphics and more</p>
-            <span class="pill">28 services</span>
-          </div>
-          <div class="category-card" data-category="programming">
-            <div class="category-icon bg-orange">
-              <i class="fas fa-code"></i>
-            </div>
-            <h3>Programming</h3>
-            <p>Web development, mobile apps, and software solutions</p>
-            <span class="pill">35 services</span>
-          </div>
-          <div class="category-card" data-category="writing">
-            <div class="category-icon bg-green">
-              <i class="fas fa-pen-fancy"></i>
-            </div>
-            <h3>Writing & Content</h3>
-            <p>Essays, blog posts, CV writing and editing services</p>
-            <span class="pill">19 services</span>
-          </div>
-          <div class="category-card" data-category="language">
-            <div class="category-icon bg-red">
-              <i class="fas fa-language"></i>
-            </div>
-            <h3>Language Exchange</h3>
-            <p>Learn new languages or practice with native speakers</p>
-            <span class="pill">15 services</span>
-          </div>
-          <div class="category-card" data-category="music">
-            <div class="category-icon bg-yellow">
-              <i class="fas fa-music"></i>
-            </div>
-            <h3>Music & Arts</h3>
-            <p>Music lessons, photography, painting and creative arts</p>
-            <span class="pill">23 services</span>
-          </div>
-        </div>
-        <div class="text-center">
-          <a href="#" class="btn btn-outline">View All Categories</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="featured-section" id="featured-section">
-      <div class="container">
-        <div class="section-header">
-          <div>
-            <h2>Featured Skills</h2>
-            <p>Top-rated services from our community</p>
-          </div>
-          <a href="#" class="btn btn-link">View all <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="featured-grid" id="featured-grid">
-          </div>
-      </div>
-    </section>
-
-    <section class="how-it-works" id="how-it-works">
-      <div class="container">
-        <div class="section-header">
-          <h2>How SkillSwap Works</h2>
-          <p>Simple steps to start exchanging skills with your peers</p>
-        </div>
-        <div class="steps">
-          <div class="step">
-            <div class="step-icon">
-              <i class="fas fa-user-plus"></i>
-            </div>
-            <h3>Create Profile</h3>
-            <p>Sign up with your matric number and showcase your skills and interests.</p>
-          </div>
-          <div class="step">
-            <div class="step-icon">
-              <i class="fas fa-bolt"></i>
-            </div>
-            <h3>Connect & Exchange</h3>
-            <p>Find students with complementary skills and arrange skill exchanges.</p>
-          </div>
-          <div class="step">
-            <div class="step-icon">
-              <i class="fas fa-shield-alt"></i>
-            </div>
-            <h3>Safe & Verified</h3>
-            <p>All users are verified students ensuring a safe and trusted community.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta-section">
-      <div class="container">
-        <h2>Ready to Start Exchanging?</h2>
-        <p>Join thousands of students already learning and sharing skills.</p>
-        <div class="cta-buttons">
-          <a href="#" class="btn btn-primary btn-lg" id="cta-signup-btn"><i class="fas fa-check"></i> Get Started Free</a>
-          <a href="#about-section" class="btn btn-outline btn-lg">Learn more</a>
-        </div>
-      </div>
-    </section>
-
-    <footer class="main-footer">
-      <div class="container">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <a href="#" class="logo">SkillSwap</a>
-            <p>Connecting students to share knowledge and build community.</p>
-          </div>
-          <div class="footer-links">
-            <h4>Platform</h4>
-            <ul>
-              <li><a href="#featured-section">Browse Skills</a></li>
-              <li><a href="#categories-section">Categories</a></li>
-              <li><a href="#how-it-works">How It Works</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h4>Support</h4>
-            <ul>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Safety</a></li>
-              <li><a href="#">Community Guidelines</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h4>Connect</h4>
-            <ul>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Social Media</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 SkillSwap. Made with <i class="fas fa-heart"></i> for students by students.</p>
-        </div>
-      </div>
-    </footer>
-
-    <div class="modal" id="login-modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Login to SkillSwap</h2>
-        <form id="login-form">
-          <div class="form-group">
-            <label for="login-email">Email/Matric Number:</label>
-            <input type="text" id="login-email" required />
-          </div>
-          <div class="form-group">
-            <label for="login-password">Password:</label>
-            <input type="password" id="login-password" required />
-          </div>
-          <div class="form-options">
-            <label>
-              <input type="checkbox" id="remember-me" />
-              Remember me
-            </label>
-            <a href="#" class="forgot-password">Forgot Password?</a>
-          </div>
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <p class="auth-switch">Don't have an account? <a href="#" id="show-register">Sign up</a></p>
-      </div>
-    </div>
-
-    <div class="modal" id="register-modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Join SkillSwap</h2>
-        <form id="register-form">
-          <div class="form-group">
-            <label for="reg-name">Full Name:</label>
-            <input type="text" id="reg-name" required />
-          </div>
-          <div class="form-group">
-            <label for="reg-email">Email:</label>
-            <input type="email" id="reg-email" required />
-          </div>
-          <div class="form-group">
-            <label for="reg-matric">Matric Number:</label>
-            <input type="text" id="reg-matric" required />
-          </div>
-          <div class="form-group">
-            <label for="reg-password">Password:</label>
-            <input type="password" id="reg-password" required />
-          </div>
-          <div class="form-group">
-            <label for="reg-confirm">Confirm Password:</label>
-            <input type="password" id="reg-confirm" required />
-          </div>
-          <button type="submit" class="btn btn-primary">Create Account</button>
-        </form>
-        <p class="auth-switch">Already have an account? <a href="#" id="show-login">Login</a></p>
-      </div>
-    </div>
-
     <main id="main-content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="short"><i class="fas fa-graduation-cap"></i>Student-to-Student Exchange Platform</div>
+            <h1>Exchange Skills, Build Community</h1>
+            <p>
+              Connect with fellow students to share knowledge, learn new skills, and build lasting relationships. From tutoring to creative projects. Find what you need or offer what you know in a trusted environment.
+            </p>
+            <div class="search-bar-container">
+              <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search for skills, services or students..." id="search-input" />
+                <i class="fas fa-filter"></i>
+                <select id="category-filter">
+                  <option value="">All Categories</option>
+                  <option value="tutoring">Tutoring & Study Help</option>
+                  <option value="design">Graphic Design</option>
+                  <option value="programming">Programming</option>
+                  <option value="writing">Writing & Content</option>
+                  <option value="language">Language Exchange</option>
+                  <option value="music">Music & Arts</option>
+                </select>
+                <button class="btn btn-primary" id="search-btn">
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat-item">
+                <div class="stat-number">2,500+</div>
+                <div class="stat-label">Active Students</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">1,200+</div>
+                <div class="stat-label">Skills Offered</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Successful Rate</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">4.8 <i class="fas fa-star"></i></div>
+                <div class="stat-label">Average Rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section" id="about-section">
+        <div class="container">
+          <h2>Why SkillSwap?</h2>
+          <div class="about-cards">
+            <div class="about-card">
+              <div class="card-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3>Student Community</h3>
+              <p>Connect with verified fellow students in a trusted environment where you can safely exchange skills and knowledge.</p>
+            </div>
+            <div class="about-card">
+              <div class="card-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <h3>Earn & Learn</h3>
+              <p>Monetize your skills while helping others succeed academically and professionally.</p>
+            </div>
+            <div class="about-card">
+              <div class="card-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3>Safe & Reliable</h3>
+              <p>Student verification and community guidelines ensure a safe and productive exchange environment.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="categories-section" id="categories-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Explore Categories</h2>
+            <p>Discover the diverse range of skills and services available in our student community</p>
+          </div>
+          <div class="categories-grid">
+            <div class="category-card" data-category="tutoring">
+              <div class="category-icon bg-blue">
+                <i class="fas fa-book-reader"></i>
+              </div>
+              <h3>Tutoring & Study Help</h3>
+              <p>Get help with coursework, exam prep, and academic subjects</p>
+              <span class="pill">42 services</span>
+            </div>
+            <div class="category-card" data-category="design">
+              <div class="category-icon bg-purple">
+                <i class="fas fa-paint-brush"></i>
+              </div>
+              <h3>Graphic Design</h3>
+              <p>Logos, flyers, social media graphics and more</p>
+              <span class="pill">28 services</span>
+            </div>
+            <div class="category-card" data-category="programming">
+              <div class="category-icon bg-orange">
+                <i class="fas fa-code"></i>
+              </div>
+              <h3>Programming</h3>
+              <p>Web development, mobile apps, and software solutions</p>
+              <span class="pill">35 services</span>
+            </div>
+            <div class="category-card" data-category="writing">
+              <div class="category-icon bg-green">
+                <i class="fas fa-pen-fancy"></i>
+              </div>
+              <h3>Writing & Content</h3>
+              <p>Essays, blog posts, CV writing and editing services</p>
+              <span class="pill">19 services</span>
+            </div>
+            <div class="category-card" data-category="language">
+              <div class="category-icon bg-red">
+                <i class="fas fa-language"></i>
+              </div>
+              <h3>Language Exchange</h3>
+              <p>Learn new languages or practice with native speakers</p>
+              <span class="pill">15 services</span>
+            </div>
+            <div class="category-card" data-category="music">
+              <div class="category-icon bg-yellow">
+                <i class="fas fa-music"></i>
+              </div>
+              <h3>Music & Arts</h3>
+              <p>Music lessons, photography, painting and creative arts</p>
+              <span class="pill">23 services</span>
+            </div>
+          </div>
+          <div class="text-center">
+            <a href="#" class="btn btn-outline">View All Categories</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="featured-section" id="featured-section">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <h2>Featured Skills</h2>
+              <p>Top-rated services from our community</p>
+            </div>
+            <a href="#" class="btn btn-link">View all <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="featured-grid" id="featured-grid">
+            </div>
+        </div>
+      </section>
+
+      <section class="how-it-works" id="how-it-works">
+        <div class="container">
+          <div class="section-header">
+            <h2>How SkillSwap Works</h2>
+            <p>Simple steps to start exchanging skills with your peers</p>
+          </div>
+          <div class="steps">
+            <div class="step">
+              <div class="step-icon">
+                <i class="fas fa-user-plus"></i>
+              </div>
+              <h3>Create Profile</h3>
+              <p>Sign up with your matric number and showcase your skills and interests.</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <h3>Connect & Exchange</h3>
+              <p>Find students with complementary skills and arrange skill exchanges.</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3>Safe & Verified</h3>
+              <p>All users are verified students ensuring a safe and trusted community.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="container">
+          <h2>Ready to Start Exchanging?</h2>
+          <p>Join thousands of students already learning and sharing skills.</p>
+          <div class="cta-buttons">
+            <a href="#" class="btn btn-primary btn-lg" id="cta-signup-btn"><i class="fas fa-check"></i> Get Started Free</a>
+            <a href="#about-section" class="btn btn-outline btn-lg">Learn more</a>
+          </div>
+        </div>
+      </section>
+
       <section id="profile-section" class="main-section" style="display: none">
         <div class="container profile-container">
           <div class="profile-header">
@@ -404,6 +326,105 @@
         </div>
       </section>
     </main>
+
+    <div class="modal" id="login-modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Login to SkillSwap</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Email/Matric Number:</label>
+            <input type="text" id="login-email" required />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" required />
+          </div>
+          <div class="form-options">
+            <label>
+              <input type="checkbox" id="remember-me" />
+              Remember me
+            </label>
+            <a href="#" class="forgot-password">Forgot Password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a href="#" id="show-register">Sign up</a></p>
+      </div>
+    </div>
+
+    <div class="modal" id="register-modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Join SkillSwap</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="reg-name">Full Name:</label>
+            <input type="text" id="reg-name" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email:</label>
+            <input type="email" id="reg-email" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-matric">Matric Number:</label>
+            <input type="text" id="reg-matric" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-photo">Profile Picture:</label>
+            <input type="file" id="reg-photo" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password:</label>
+            <input type="password" id="reg-password" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-confirm">Confirm Password:</label>
+            <input type="password" id="reg-confirm" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="#" id="show-login">Login</a></p>
+      </div>
+    </div>
+
+    <footer class="main-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="#" class="logo">SkillSwap</a>
+            <p>Connecting students to share knowledge and build community.</p>
+          </div>
+          <div class="footer-links">
+            <h4>Platform</h4>
+            <ul>
+              <li><a href="#featured-section">Browse Skills</a></li>
+              <li><a href="#categories-section">Categories</a></li>
+              <li><a href="#how-it-works">How It Works</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h4>Support</h4>
+            <ul>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Safety</a></li>
+              <li><a href="#">Community Guidelines</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h4>Connect</h4>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Social Media</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 SkillSwap. Made with <i class="fas fa-heart"></i> for students by students.</p>
+        </div>
+      </div>
+    </footer>
     <script src="script.js"></script>
   </body>
 </html>

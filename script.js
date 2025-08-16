@@ -1,6 +1,6 @@
 // DOM Elements
 const sections = {
-  home: document.getElementById('home-section'),
+  home: document.getElementById('main-content'),
   login: document.getElementById('login-modal'),
   register: document.getElementById('register-modal'),
   profile: document.getElementById('profile-section'),
@@ -18,8 +18,13 @@ const navLinks = {
 const authButtons = {
   login: document.getElementById('login-btn'),
   register: document.getElementById('register-btn'),
-  ctaSignup: document.getElementById('cta-signup-btn')
+  ctaSignup: document.getElementById('cta-signup-btn'),
+  mobileLogin: document.getElementById('mobile-login-btn'),
+  mobileRegister: document.getElementById('mobile-register-btn')
 };
+
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
 
 const loginModal = document.getElementById('login-modal');
 const registerModal = document.getElementById('register-modal');
@@ -64,8 +69,6 @@ function init() {
   if (loggedInUser) {
     currentUser = JSON.parse(loggedInUser);
     updateNavForLoggedInUser();
-  } else {
-    showHome();
   }
   
   if (users.length === 0) {
@@ -77,50 +80,37 @@ function init() {
   updateMessageBadge();
 }
 
-function showHome() {
-  // Hide all main sections and show the default home content
-  document.querySelectorAll('.main-section').forEach(section => {
-    section.style.display = 'none';
-  });
-  document.querySelectorAll('section').forEach(section => {
-    section.style.display = 'block';
-  });
-  // Ensure we are at the top of the page
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function showSection(section) {
+  document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+  if (section === 'home') {
+    document.querySelector('.hero').style.display = 'block';
+    document.querySelector('.about-section').style.display = 'block';
+    document.querySelector('.categories-section').style.display = 'block';
+    document.querySelector('.featured-section').style.display = 'block';
+    document.querySelector('.how-it-works').style.display = 'block';
+    document.querySelector('.cta-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    document.getElementById(section + '-section').style.display = 'block';
+  }
 }
 
 function setupEventListeners() {
+  // Mobile menu toggle
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('active');
+  });
+
   // Modal controls
-  authButtons.login.addEventListener('click', (e) => {
-    e.preventDefault();
-    showModal('login-modal');
-  });
-  
-  authButtons.register.addEventListener('click', (e) => {
-    e.preventDefault();
-    showModal('register-modal');
-  });
-  
-  authButtons.ctaSignup.addEventListener('click', (e) => {
-    e.preventDefault();
-    showModal('register-modal');
-  });
-  
-  closeModalButtons.forEach(button => {
-    button.addEventListener('click', hideModals);
-  });
-  
-  showRegisterLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    hideModals();
-    showModal('register-modal');
-  });
-  
-  showLoginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    hideModals();
-    showModal('login-modal');
-  });
+  authButtons.login.addEventListener('click', (e) => { e.preventDefault(); showModal('login-modal'); });
+  authButtons.register.addEventListener('click', (e) => { e.preventDefault(); showModal('register-modal'); });
+  authButtons.ctaSignup.addEventListener('click', (e) => { e.preventDefault(); showModal('register-modal'); });
+  if (authButtons.mobileLogin) authButtons.mobileLogin.addEventListener('click', (e) => { e.preventDefault(); mobileMenu.classList.remove('active'); showModal('login-modal'); });
+  if (authButtons.mobileRegister) authButtons.mobileRegister.addEventListener('click', (e) => { e.preventDefault(); mobileMenu.classList.remove('active'); showModal('register-modal'); });
+
+  closeModalButtons.forEach(button => { button.addEventListener('click', hideModals); });
+  showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); hideModals(); showModal('register-modal'); });
+  showLoginLink.addEventListener('click', (e) => { e.preventDefault(); hideModals(); showModal('login-modal'); });
 
   // Forms
   if (loginForm) loginForm.addEventListener('submit', handleLogin);
@@ -142,14 +132,8 @@ function setupEventListeners() {
     });
     messageInput.addEventListener('input', autoResizeTextarea);
   }
-  if (backToProfileBtn) backToProfileBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    showProfileSection();
-  });
-  if (addMediaBtn) addMediaBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    attachmentDropdown.classList.toggle('active');
-  });
+  if (backToProfileBtn) backToProfileBtn.addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); });
+  if (addMediaBtn) addMediaBtn.addEventListener('click', (e) => { e.preventDefault(); attachmentDropdown.classList.toggle('active'); });
 }
 
 function autoResizeTextarea() {
@@ -179,8 +163,9 @@ function handleLogin(e) {
     localStorage.setItem('currentUser', JSON.stringify(user));
     updateNavForLoggedInUser();
     hideModals();
-    showProfileSection();
+    showSection('profile');
     loginForm.reset();
+    renderUserProfile();
   } else {
     alert('Invalid credentials');
   }
@@ -191,6 +176,7 @@ function handleRegister(e) {
   const name = document.getElementById('reg-name').value;
   const email = document.getElementById('reg-email').value;
   const matric = document.getElementById('reg-matric').value;
+  const photoFile = document.getElementById('reg-photo').files[0];
   const password = document.getElementById('reg-password').value;
   const confirm = document.getElementById('reg-confirm').value;
 
@@ -204,24 +190,34 @@ function handleRegister(e) {
     return;
   }
   
-  const newUser = {
-    id: generateId(),
-    name,
-    email,
-    matric,
-    password,
-    skills: [],
-    profilePic: 'https://randomuser.me/api/portraits/' + (Math.random() > 0.5 ? 'men' : 'women') + '/' + Math.floor(Math.random() * 50) + '.jpg'
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    const newUser = {
+      id: generateId(),
+      name,
+      email,
+      matric,
+      password,
+      profilePic: reader.result || 'https://via.placeholder.com/150',
+      skills: []
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    updateNavForLoggedInUser();
+    hideModals();
+    showSection('profile');
+    registerForm.reset();
+    renderUserProfile();
   };
   
-  users.push(newUser);
-  localStorage.setItem('users', JSON.stringify(users));
-  currentUser = newUser;
-  localStorage.setItem('currentUser', JSON.stringify(newUser));
-  updateNavForLoggedInUser();
-  hideModals();
-  showProfileSection();
-  registerForm.reset();
+  if (photoFile) {
+    reader.readAsDataURL(photoFile);
+  } else {
+    reader.onloadend();
+  }
 }
 
 function handleAddSkill(e) {
@@ -238,12 +234,12 @@ function handleAddSkill(e) {
     description: skillDesc,
     price: skillPrice || '₦0',
     userId: currentUser.id,
-    category: 'other' // Placeholder
+    category: 'other' 
   };
   
   currentUser.skills.push(newSkill);
   const userIndex = users.findIndex(u => u.id === currentUser.id);
-  users[userIndex] = currentUser;
+  users[userIndex].skills = currentUser.skills;
 
   services.push({ ...newSkill, providerName: currentUser.name, providerMatric: currentUser.matric, providerPic: currentUser.profilePic });
 
@@ -257,30 +253,41 @@ function handleAddSkill(e) {
 }
 
 function updateNavForLoggedInUser() {
-  if (!currentUser) {
-    location.reload(); // Fallback
-    return;
-  }
-  const headerButtons = document.getElementById('header-buttons');
-  headerButtons.innerHTML = `
+  if (!currentUser) { location.reload(); return; }
+  
+  document.getElementById('header-buttons').innerHTML = `
     <a href="#" class="btn btn-outline" id="profile-btn">Profile</a>
     <a href="#" class="btn btn-accent" id="logout-btn">Log Out</a>
   `;
-  document.getElementById('profile-btn').addEventListener('click', (e) => {
-    e.preventDefault();
-    showProfileSection();
-  });
-  document.getElementById('logout-btn').addEventListener('click', (e) => {
-    e.preventDefault();
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    location.reload();
-  });
+  document.getElementById('profile-btn').addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); });
+  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); currentUser = null; localStorage.removeItem('currentUser'); location.reload(); });
+
+  if (document.getElementById('mobile-login-btn')) {
+    document.querySelector('.mobile-auth-links').innerHTML = `
+      <li><a href="#" class="btn btn-outline" id="mobile-profile-btn">Profile</a></li>
+      <li><a href="#" class="btn btn-accent" id="mobile-logout-btn">Log Out</a></li>
+    `;
+    document.getElementById('mobile-profile-btn').addEventListener('click', (e) => { e.preventDefault(); mobileMenu.classList.remove('active'); showSection('profile'); });
+    document.getElementById('mobile-logout-btn').addEventListener('click', (e) => { e.preventDefault(); currentUser = null; localStorage.removeItem('currentUser'); location.reload(); });
+  }
+}
+
+function renderUserProfile() {
+  if (!currentUser) return;
+  profileName.textContent = currentUser.name;
+  profileMatric.textContent = currentUser.matric;
+  profilePic.src = currentUser.profilePic;
+  renderUserSkills();
+  renderConversations();
 }
 
 function renderUserSkills() {
   if (!currentUser) return;
   skillsList.innerHTML = '';
+  if (currentUser.skills.length === 0) {
+    skillsList.innerHTML = '<p class="no-results">No skills added yet.</p>';
+    return;
+  }
   currentUser.skills.forEach(skill => {
     const skillItem = document.createElement('div');
     skillItem.className = 'skill-item';
@@ -308,7 +315,6 @@ function renderUserSkills() {
 
 function renderFeaturedServices() {
   if (!featuredGrid) return;
-  
   featuredGrid.innerHTML = '';
   const searchTerm = searchInput.value.toLowerCase();
   const categoryTerm = categoryFilter.value.toLowerCase();
@@ -327,6 +333,10 @@ function renderFeaturedServices() {
   filteredServices.forEach(service => {
     const serviceCard = document.createElement('div');
     serviceCard.className = 'service-card';
+    const contactBtnHtml = currentUser ? 
+      `<a href="#" class="contact-btn" data-id="${service.userId}" data-name="${service.providerName}">Contact</a>` :
+      `<a href="#" class="contact-btn login-required">Contact</a>`;
+
     serviceCard.innerHTML = `
       <img src="${service.providerPic || 'https://via.placeholder.com/300x180'}" alt="${service.name}">
       <div class="service-content">
@@ -334,7 +344,7 @@ function renderFeaturedServices() {
         <h3>${service.name}</h3>
         <p class="provider">${service.providerName} (${service.providerMatric})</p>
         <p class="price">${service.price}</p>
-        <a href="#" class="contact-btn" data-id="${service.userId}" data-name="${service.providerName}">Contact</a>
+        ${contactBtnHtml}
       </div>
     `;
     featuredGrid.appendChild(serviceCard);
@@ -351,9 +361,7 @@ function renderFeaturedServices() {
       const providerName = this.getAttribute('data-name');
       let conversation = conversations.find(conv => (conv.user1 === currentUser.id && conv.user2 === providerId) || (conv.user1 === providerId && conv.user2 === currentUser.id));
       if (!conversation) {
-        conversation = {
-          id: generateId(), user1: currentUser.id, user2: providerId, userName1: currentUser.name, userName2: providerName, messages: []
-        };
+        conversation = { id: generateId(), user1: currentUser.id, user2: providerId, userName1: currentUser.name, userName2: providerName, messages: [] };
         conversations.push(conversation);
         localStorage.setItem('conversations', JSON.stringify(conversations));
       }
@@ -363,21 +371,8 @@ function renderFeaturedServices() {
   });
 }
 
-function showProfileSection() {
-  document.querySelectorAll('section').forEach(section => section.style.display = 'none');
-  sections.profile.style.display = 'block';
-  if (currentUser) {
-    profileName.textContent = currentUser.name;
-    profileMatric.textContent = currentUser.matric;
-    profilePic.src = currentUser.profilePic;
-    renderUserSkills();
-    renderConversations();
-  }
-}
-
 function showChatSection(recipientName) {
-  document.querySelectorAll('section').forEach(section => section.style.display = 'none');
-  sections.chat.style.display = 'block';
+  showSection('chat');
   chatWithLabel.textContent = `Chat with ${recipientName}`;
   renderMessages();
 }
@@ -399,16 +394,11 @@ function renderConversations() {
       showChatSection(otherUserName);
     });
     conversationsList.appendChild(conversationItem);
-    // Count unread messages (basic implementation)
     const unread = conv.messages.filter(msg => !msg.read && msg.senderId !== currentUser.id).length;
     unreadCount += unread;
   });
   messageBadge.textContent = unreadCount;
-  if (unreadCount === 0) {
-    messageBadge.style.display = 'none';
-  } else {
-    messageBadge.style.display = 'inline-block';
-  }
+  if (unreadCount === 0) { messageBadge.style.display = 'none'; } else { messageBadge.style.display = 'inline-block'; }
 }
 
 function renderMessages() {
@@ -422,7 +412,6 @@ function renderMessages() {
     messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
     messageDiv.innerHTML = `<div class="text">${msg.text}</div>`;
     chatMessages.appendChild(messageDiv);
-    // Mark as read
     if (!isSent) msg.read = true;
   });
   localStorage.setItem('conversations', JSON.stringify(conversations));
@@ -434,12 +423,7 @@ function sendMessage() {
   if (!currentUser || !currentChat || !messageInput.value.trim()) return;
   const conversationIndex = conversations.findIndex(conv => conv.id === currentChat);
   if (conversationIndex === -1) return;
-  const newMessage = {
-    senderId: currentUser.id,
-    text: messageInput.value.trim(),
-    timestamp: new Date().getTime(),
-    read: false
-  };
+  const newMessage = { senderId: currentUser.id, text: messageInput.value.trim(), timestamp: new Date().getTime(), read: false };
   conversations[conversationIndex].messages.push(newMessage);
   localStorage.setItem('conversations', JSON.stringify(conversations));
   renderMessages();
@@ -448,13 +432,10 @@ function sendMessage() {
 }
 
 // Helper functions
-function generateId() {
-  return Math.random().toString(36).substr(2, 9);
-}
-
+function generateId() { return Math.random().toString(36).substr(2, 9); }
 function loadSampleData() {
   const sampleUsers = [
-    { id: 'user1', name: 'Ikeri Priscilla Oluchukwu', email: 'priscilla@example.com', matric: '130310014', password: 'password1', profilePic: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80', skills: [{ id: 'skill1', name: 'Graphic Design', description: 'Professional logo and branding design', price: '₦5000 per design', userId: 'user1', category: 'design' }] },
+    { id: 'user1', name: 'Ikeri Priscilla Oluchukwu', email: 'priscilla@example.com', matric: '130310014', password: 'password1', profilePic: 'https://randomuser.me/api/portraits/women/1.jpg', skills: [{ id: 'skill1', name: 'Graphic Design', description: 'Professional logo and branding design', price: '₦5000 per design', userId: 'user1', category: 'design' }] },
     { id: 'user2', name: 'Ajayi Oladotun Temitope', email: 'temitope@example.com', matric: '249074195', password: 'password2', profilePic: 'https://randomuser.me/api/portraits/men/1.jpg', skills: [{ id: 'skill3', name: 'Math Tutoring', description: 'Calculus and Algebra tutoring for undergraduates', price: '₦2000 per hour', userId: 'user2', category: 'tutoring' }] },
     { id: 'user3', name: 'Gezawa Umar Sulaiman', email: 'umar@example.com', matric: '249074295', password: 'password3', profilePic: 'https://randomuser.me/api/portraits/men/2.jpg', skills: [{ id: 'skill4', name: 'Web Development', description: 'Basic HTML, CSS, JavaScript websites', price: '₦15000 per project', userId: 'user3', category: 'programming' }] },
     { id: 'user4', name: 'Oshodi Nasirudeen Oladipupo', email: 'nasir@example.com', matric: '249074197', password: 'password4', profilePic: 'https://randomuser.me/api/portraits/men/3.jpg', skills: [{ id: 'skill5', name: 'Essay Writing', description: 'Academic writing and proofreading services', price: '₦2500 per page', userId: 'user4', category: 'writing' }] },
@@ -464,6 +445,16 @@ function loadSampleData() {
   services = sampleUsers.flatMap(user => user.skills.map(skill => ({ ...skill, providerName: user.name, providerMatric: user.matric, providerPic: user.profilePic })));
   localStorage.setItem('users', JSON.stringify(users));
   localStorage.setItem('services', JSON.stringify(services));
+}
+
+function updateMessageBadge() {
+  if (!currentUser) { return; }
+  let unreadCount = conversations
+    .filter(conv => conv.user1 === currentUser.id || conv.user2 === currentUser.id)
+    .flatMap(conv => conv.messages)
+    .filter(msg => !msg.read && msg.senderId !== currentUser.id).length;
+  messageBadge.textContent = unreadCount;
+  if (unreadCount === 0) { messageBadge.style.display = 'none'; } else { messageBadge.style.display = 'inline-block'; }
 }
 
 init();
