@@ -1,18 +1,8 @@
 // DOM Elements
 const sections = {
   home: document.getElementById('main-content'),
-  login: document.getElementById('login-modal'),
-  register: document.getElementById('register-modal'),
   profile: document.getElementById('profile-section'),
   chat: document.getElementById('chat-section'),
-};
-
-const navLinks = {
-  home: document.getElementById('home-logo'),
-  about: document.querySelector('a[href="#about-section"]'),
-  browse: document.querySelector('a[href="#featured-section"]'),
-  categories: document.querySelector('a[href="#categories-section"]'),
-  howItWorks: document.querySelector('a[href="#how-it-works"]')
 };
 
 const authButtons = {
@@ -28,12 +18,14 @@ const mobileMenu = document.getElementById('mobile-menu');
 
 const loginModal = document.getElementById('login-modal');
 const registerModal = document.getElementById('register-modal');
+const editProfileModal = document.getElementById('edit-profile-modal');
 const closeModalButtons = document.querySelectorAll('.close-modal');
 const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
 
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
+const editProfileForm = document.getElementById('edit-profile-form');
 const addSkillForm = document.getElementById('add-skill-form');
 
 const searchInput = document.getElementById('search-input');
@@ -44,6 +36,7 @@ const featuredGrid = document.getElementById('featured-grid');
 const profileName = document.getElementById('profile-name');
 const profileMatric = document.getElementById('profile-matric');
 const profilePic = document.getElementById('profile-pic');
+const editProfileBtn = document.getElementById('edit-profile-btn');
 const skillsList = document.getElementById('skills-list');
 const messageBadge = document.getElementById('message-badge');
 const conversationsList = document.getElementById('conversations-list');
@@ -55,9 +48,11 @@ const sendMessageBtn = document.getElementById('send-message-btn');
 const backToProfileBtn = document.getElementById('back-to-profile');
 const addMediaBtn = document.getElementById('add-media-btn');
 const attachmentDropdown = document.getElementById('attachment-dropdown');
+const chatRecipientProfileBtn = document.getElementById('chat-recipient-profile-btn');
 
 // State
 let currentUser = null;
+let currentRecipientId = null;
 let users = JSON.parse(localStorage.getItem('users')) || [];
 let services = JSON.parse(localStorage.getItem('services')) || [];
 let conversations = JSON.parse(localStorage.getItem('conversations')) || [];
@@ -69,6 +64,10 @@ function init() {
   if (loggedInUser) {
     currentUser = JSON.parse(loggedInUser);
     updateNavForLoggedInUser();
+    showSection('profile');
+    renderUserProfile();
+  } else {
+    showSection('home');
   }
   
   if (users.length === 0) {
@@ -80,18 +79,25 @@ function init() {
   updateMessageBadge();
 }
 
-function showSection(section) {
-  document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-  if (section === 'home') {
-    document.querySelector('.hero').style.display = 'block';
-    document.querySelector('.about-section').style.display = 'block';
-    document.querySelector('.categories-section').style.display = 'block';
-    document.querySelector('.featured-section').style.display = 'block';
-    document.querySelector('.how-it-works').style.display = 'block';
-    document.querySelector('.cta-section').style.display = 'block';
+function showSection(sectionId) {
+  // Hide all main sections
+  document.querySelectorAll('section.main-section').forEach(s => s.style.display = 'none');
+  
+  // Hide main landing page sections
+  const landingSections = ['hero', 'about-section', 'categories-section', 'featured-section', 'how-it-works', 'cta-section'];
+  landingSections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  if (sectionId === 'home') {
+    landingSections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
-    document.getElementById(section + '-section').style.display = 'block';
+    document.getElementById(sectionId + '-section').style.display = 'block';
   }
 }
 
@@ -111,6 +117,10 @@ function setupEventListeners() {
   closeModalButtons.forEach(button => { button.addEventListener('click', hideModals); });
   showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); hideModals(); showModal('register-modal'); });
   showLoginLink.addEventListener('click', (e) => { e.preventDefault(); hideModals(); showModal('login-modal'); });
+
+  // Profile editing
+  if (editProfileBtn) editProfileBtn.addEventListener('click', (e) => { e.preventDefault(); showModal('edit-profile-modal'); populateEditProfileForm(); });
+  if (editProfileForm) editProfileForm.addEventListener('submit', handleProfileEdit);
 
   // Forms
   if (loginForm) loginForm.addEventListener('submit', handleLogin);
@@ -132,9 +142,89 @@ function setupEventListeners() {
     });
     messageInput.addEventListener('input', autoResizeTextarea);
   }
-  if (backToProfileBtn) backToProfileBtn.addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); });
+  if (backToProfileBtn) backToProfileBtn.addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); renderUserProfile(); });
   if (addMediaBtn) addMediaBtn.addEventListener('click', (e) => { e.preventDefault(); attachmentDropdown.classList.toggle('active'); });
+  if (chatRecipientProfileBtn) chatRecipientProfileBtn.addEventListener('click', (e) => { e.preventDefault(); showRecipientProfile(); });
+
+  // Category filter links
+  document.querySelectorAll('.category-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const category = e.currentTarget.dataset.category;
+      categoryFilter.value = category;
+      renderFeaturedServices();
+      window.scrollTo({ top: document.getElementById('featured-section').offsetTop, behavior: 'smooth' });
+    });
+  });
+
+  // Smooth scrolling for nav
+  document.querySelectorAll('.main-nav a, .mobile-menu a').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        if (this.getAttribute('href').startsWith('#')) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+            if (mobileMenu.classList.contains('active')) {
+                mobileMenu.classList.remove('active');
+            }
+        }
+    });
+});
 }
+
+function showRecipientProfile() {
+    const recipientUser = users.find(u => u.id === currentRecipientId);
+    if (!recipientUser) {
+        alert('User profile not found.');
+        return;
+    }
+
+    // Create a temporary "public" profile view
+    const publicProfileSection = document.createElement('section');
+    publicProfileSection.id = 'public-profile-section';
+    publicProfileSection.className = 'main-section';
+    publicProfileSection.innerHTML = `
+        <div class="container profile-container">
+          <div class="profile-header">
+            <div class="profile-pic-container">
+              <img src="${recipientUser.profilePic}" alt="Profile Picture" class="profile-pic" />
+            </div>
+            <div class="profile-info">
+              <h2>${recipientUser.name}</h2>
+              <p class="matric-number"><i class="fas fa-graduation-cap"></i> Matric: ${recipientUser.matric}</p>
+              <a href="#" class="btn btn-primary" id="message-from-profile-btn">Message</a>
+            </div>
+          </div>
+          <div class="profile-content">
+            <div class="profile-skills">
+              <h3>Skills & Services</h3>
+              <div id="public-skills-list" class="skills-grid"></div>
+            </div>
+          </div>
+        </div>
+    `;
+
+    // Append to body and show
+    document.body.appendChild(publicProfileSection);
+    showSection('public-profile');
+
+    // Render skills
+    const publicSkillsList = document.getElementById('public-skills-list');
+    recipientUser.skills.forEach(skill => {
+        const skillItem = document.createElement('div');
+        skillItem.className = 'skill-item';
+        skillItem.innerHTML = `<h4>${skill.name}</h4><p>${skill.description || ''}</p><p class="price">${skill.price}</p>`;
+        publicSkillsList.appendChild(skillItem);
+    });
+
+    // Add event listener for the message button on the public profile
+    document.getElementById('message-from-profile-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.body.removeChild(publicProfileSection);
+        showSection('chat');
+    });
+}
+
 
 function autoResizeTextarea() {
   this.style.height = 'auto';
@@ -152,6 +242,58 @@ function hideModals() {
   });
   document.body.style.overflow = '';
 }
+
+function populateEditProfileForm() {
+    if (currentUser) {
+        document.getElementById('edit-name').value = currentUser.name;
+    }
+}
+
+function handleProfileEdit(e) {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    const newName = document.getElementById('edit-name').value;
+    const newPhotoFile = document.getElementById('edit-photo').files[0];
+
+    const updateProfile = (newPhotoData) => {
+        currentUser.name = newName;
+        currentUser.profilePic = newPhotoData || currentUser.profilePic;
+
+        const userIndex = users.findIndex(u => u.id === currentUser.id);
+        if (userIndex !== -1) {
+            users[userIndex].name = newName;
+            users[userIndex].profilePic = newPhotoData || users[userIndex].profilePic;
+        }
+
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        localStorage.setItem('users', JSON.stringify(users));
+
+        // Update services data as well
+        services.forEach(service => {
+            if (service.userId === currentUser.id) {
+                service.providerName = newName;
+                service.providerPic = newPhotoData || service.providerPic;
+            }
+        });
+        localStorage.setItem('services', JSON.stringify(services));
+
+        renderUserProfile();
+        hideModals();
+        alert('Profile updated successfully!');
+    };
+
+    if (newPhotoFile) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            updateProfile(reader.result);
+        };
+        reader.readAsDataURL(newPhotoFile);
+    } else {
+        updateProfile(null);
+    }
+}
+
 
 function handleLogin(e) {
   e.preventDefault();
@@ -226,13 +368,25 @@ function handleAddSkill(e) {
 
   const skillName = document.getElementById('skill-name').value;
   const skillDesc = document.getElementById('skill-desc').value;
-  const skillPrice = document.getElementById('skill-price').value;
+  let skillPrice = document.getElementById('skill-price').value;
+
+  // Auto-format price
+  if (skillPrice) {
+      if (!skillPrice.startsWith('₦')) {
+          skillPrice = '₦' + skillPrice;
+      }
+      if (!skillPrice.includes('/')) {
+          skillPrice += '/project'; // Defaulting to 'per project'
+      }
+  } else {
+      skillPrice = '₦0';
+  }
 
   const newSkill = {
     id: generateId(),
     name: skillName,
     description: skillDesc,
-    price: skillPrice || '₦0',
+    price: skillPrice,
     userId: currentUser.id,
     category: 'other' 
   };
@@ -262,8 +416,9 @@ function updateNavForLoggedInUser() {
   document.getElementById('profile-btn').addEventListener('click', (e) => { e.preventDefault(); showSection('profile'); });
   document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); currentUser = null; localStorage.removeItem('currentUser'); location.reload(); });
 
-  if (document.getElementById('mobile-login-btn')) {
-    document.querySelector('.mobile-auth-links').innerHTML = `
+  const mobileAuthLinks = document.querySelector('.mobile-auth-links');
+  if (mobileAuthLinks) {
+    mobileAuthLinks.innerHTML = `
       <li><a href="#" class="btn btn-outline" id="mobile-profile-btn">Profile</a></li>
       <li><a href="#" class="btn btn-accent" id="mobile-logout-btn">Log Out</a></li>
     `;
@@ -285,7 +440,7 @@ function renderUserSkills() {
   if (!currentUser) return;
   skillsList.innerHTML = '';
   if (currentUser.skills.length === 0) {
-    skillsList.innerHTML = '<p class="no-results">No skills added yet.</p>';
+    skillsList.innerHTML = '<p class="no-results">No skills added yet. Add a skill to get started!</p>';
     return;
   }
   currentUser.skills.forEach(skill => {
@@ -295,21 +450,59 @@ function renderUserSkills() {
       <h4>${skill.name}</h4>
       <p>${skill.description || 'No description provided'}</p>
       <p class="price">${skill.price}</p>
-      <button class="delete-skill" data-id="${skill.id}">×</button>
+      <div class="skill-item-buttons">
+          <button class="edit-btn" data-id="${skill.id}"><i class="fas fa-edit"></i></button>
+          <button class="delete-btn" data-id="${skill.id}"><i class="fas fa-trash"></i></button>
+      </div>
     `;
     skillsList.appendChild(skillItem);
   });
-  document.querySelectorAll('.delete-skill').forEach(button => {
+  document.querySelectorAll('.delete-btn').forEach(button => {
     button.addEventListener('click', function() {
-      if (confirm('Are you sure?')) {
+      if (confirm('Are you sure you want to delete this skill?')) {
         currentUser.skills = currentUser.skills.filter(s => s.id !== this.dataset.id);
         const userIndex = users.findIndex(u => u.id === currentUser.id);
         users[userIndex].skills = currentUser.skills;
         localStorage.setItem('users', JSON.stringify(users));
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        services = services.filter(s => s.id !== this.dataset.id);
+        localStorage.setItem('services', JSON.stringify(services));
         renderUserSkills();
+        renderFeaturedServices();
       }
     });
+  });
+  document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', function() {
+          const skillToEdit = currentUser.skills.find(s => s.id === this.dataset.id);
+          const newName = prompt("Enter new skill name:", skillToEdit.name);
+          if (newName !== null) {
+              skillToEdit.name = newName;
+              const newDesc = prompt("Enter new description:", skillToEdit.description);
+              if (newDesc !== null) skillToEdit.description = newDesc;
+              let newPrice = prompt("Enter new price (e.g., 5000):", skillToEdit.price.replace('₦', '').replace('/project', ''));
+              if (newPrice !== null) {
+                  if (!newPrice.startsWith('₦')) newPrice = '₦' + newPrice;
+                  if (!newPrice.includes('/')) newPrice += '/project';
+                  skillToEdit.price = newPrice;
+              }
+              const userIndex = users.findIndex(u => u.id === currentUser.id);
+              users[userIndex].skills = currentUser.skills;
+              localStorage.setItem('users', JSON.stringify(users));
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+              
+              const serviceToUpdate = services.find(s => s.id === skillToEdit.id);
+              if (serviceToUpdate) {
+                  serviceToUpdate.name = newName;
+                  serviceToUpdate.description = newDesc;
+                  serviceToUpdate.price = newPrice;
+              }
+              localStorage.setItem('services', JSON.stringify(services));
+              
+              renderUserSkills();
+              renderFeaturedServices();
+          }
+      });
   });
 }
 
@@ -337,13 +530,15 @@ function renderFeaturedServices() {
       `<a href="#" class="contact-btn" data-id="${service.userId}" data-name="${service.providerName}">Contact</a>` :
       `<a href="#" class="contact-btn login-required">Contact</a>`;
 
+    const formattedPrice = service.price.startsWith('₦') ? service.price.replace('per', '/') : service.price;
+
     serviceCard.innerHTML = `
       <img src="${service.providerPic || 'https://via.placeholder.com/300x180'}" alt="${service.name}">
       <div class="service-content">
         <span class="category-pill">${service.category || 'Other'}</span>
         <h3>${service.name}</h3>
         <p class="provider">${service.providerName} (${service.providerMatric})</p>
-        <p class="price">${service.price}</p>
+        <p class="price">${formattedPrice}</p>
         ${contactBtnHtml}
       </div>
     `;
@@ -366,6 +561,7 @@ function renderFeaturedServices() {
         localStorage.setItem('conversations', JSON.stringify(conversations));
       }
       currentChat = conversation.id;
+      currentRecipientId = providerId;
       showChatSection(providerName);
     });
   });
@@ -391,6 +587,7 @@ function renderConversations() {
     conversationItem.innerHTML = `<h4>${otherUserName}</h4><p>${lastMessage.substring(0, 30)}${lastMessage.length > 30 ? '...' : ''}</p>`;
     conversationItem.addEventListener('click', () => {
       currentChat = conv.id;
+      currentRecipientId = otherUserId;
       showChatSection(otherUserName);
     });
     conversationsList.appendChild(conversationItem);
@@ -435,11 +632,11 @@ function sendMessage() {
 function generateId() { return Math.random().toString(36).substr(2, 9); }
 function loadSampleData() {
   const sampleUsers = [
-    { id: 'user1', name: 'Ikeri Priscilla Oluchukwu', email: 'priscilla@example.com', matric: '130310014', password: 'password1', profilePic: 'https://randomuser.me/api/portraits/women/1.jpg', skills: [{ id: 'skill1', name: 'Graphic Design', description: 'Professional logo and branding design', price: '₦5000 per design', userId: 'user1', category: 'design' }] },
-    { id: 'user2', name: 'Ajayi Oladotun Temitope', email: 'temitope@example.com', matric: '249074195', password: 'password2', profilePic: 'https://randomuser.me/api/portraits/men/1.jpg', skills: [{ id: 'skill3', name: 'Math Tutoring', description: 'Calculus and Algebra tutoring for undergraduates', price: '₦2000 per hour', userId: 'user2', category: 'tutoring' }] },
-    { id: 'user3', name: 'Gezawa Umar Sulaiman', email: 'umar@example.com', matric: '249074295', password: 'password3', profilePic: 'https://randomuser.me/api/portraits/men/2.jpg', skills: [{ id: 'skill4', name: 'Web Development', description: 'Basic HTML, CSS, JavaScript websites', price: '₦15000 per project', userId: 'user3', category: 'programming' }] },
-    { id: 'user4', name: 'Oshodi Nasirudeen Oladipupo', email: 'nasir@example.com', matric: '249074197', password: 'password4', profilePic: 'https://randomuser.me/api/portraits/men/3.jpg', skills: [{ id: 'skill5', name: 'Essay Writing', description: 'Academic writing and proofreading services', price: '₦2500 per page', userId: 'user4', category: 'writing' }] },
-    { id: 'user5', name: 'Ukaegbu Chidinma Glory', email: 'chidinma@example.com', matric: '249074248', password: 'password5', profilePic: 'https://randomuser.me/api/portraits/women/2.jpg', skills: [{ id: 'skill6', name: 'French Tutoring', description: 'Beginner to intermediate French lessons', price: '₦1500 per hour', userId: 'user5', category: 'language' }] },
+    { id: 'user1', name: 'Ikeri Priscilla Oluchukwu', email: 'priscilla@example.com', matric: '130310014', password: 'password1', profilePic: 'https://randomuser.me/api/portraits/women/1.jpg', skills: [{ id: 'skill1', name: 'Graphic Design', description: 'Professional logo and branding design', price: '₦5000/design', userId: 'user1', category: 'design' }] },
+    { id: 'user2', name: 'Ajayi Oladotun Temitope', email: 'temitope@example.com', matric: '249074195', password: 'password2', profilePic: 'https://randomuser.me/api/portraits/men/1.jpg', skills: [{ id: 'skill3', name: 'Math Tutoring', description: 'Calculus and Algebra tutoring for undergraduates', price: '₦2000/hour', userId: 'user2', category: 'tutoring' }] },
+    { id: 'user3', name: 'Gezawa Umar Sulaiman', email: 'umar@example.com', matric: '249074295', password: 'password3', profilePic: 'https://randomuser.me/api/portraits/men/2.jpg', skills: [{ id: 'skill4', name: 'Web Development', description: 'Basic HTML, CSS, JavaScript websites', price: '₦15000/project', userId: 'user3', category: 'programming' }] },
+    { id: 'user4', name: 'Oshodi Nasirudeen Oladipupo', email: 'nasir@example.com', matric: '249074197', password: 'password4', profilePic: 'https://randomuser.me/api/portraits/men/3.jpg', skills: [{ id: 'skill5', name: 'Essay Writing', description: 'Academic writing and proofreading services', price: '₦2500/page', userId: 'user4', category: 'writing' }] },
+    { id: 'user5', name: 'Ukaegbu Chidinma Glory', email: 'chidinma@example.com', matric: '249074248', password: 'password5', profilePic: 'https://randomuser.me/api/portraits/women/2.jpg', skills: [{ id: 'skill6', name: 'French Tutoring', description: 'Beginner to intermediate French lessons', price: '₦1500/hour', userId: 'user5', category: 'language' }] },
   ];
   users = sampleUsers;
   services = sampleUsers.flatMap(user => user.skills.map(skill => ({ ...skill, providerName: user.name, providerMatric: user.matric, providerPic: user.profilePic })));

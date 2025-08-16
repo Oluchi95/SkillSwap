@@ -289,6 +289,10 @@ a {
   color: white;
 }
 
+.stats i {
+    color: #FDCC0D;
+}
+
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
@@ -309,11 +313,12 @@ a {
   display: flex;
   align-items: center;
   background-color: white;
-  padding: 8px 15px;
-  border-radius: 50px;
+  padding: 0 8px;
+  border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 700px;
+  margin-right: 10px;
 }
 
 .search-bar i {
@@ -335,19 +340,41 @@ a {
   color: #a0a0a0;
 }
 
-.search-bar select {
-  background: none;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-  color: var(--gray-color);
+.filter-bar {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 0 8px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 30%;
+  margin-right: 10px;
 }
 
-.search-bar .btn-primary {
+.filter-bar select {
+  border: none;
+  outline: none;
+  flex: 1;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.filter-bar i {
+  color: var(--gray-color);
+  font-size: 1.2rem;
+  margin-right: 10px;
+}
+
+.filter-bar select option {
+  padding: 10px;
+  background-color: white;
+  color: var(--dark-color);
+  text-align: left;
+}
+
+#search-btn {
   padding: 10px 20px;
-  border-radius: 30px;
-  margin-left: 10px;
+  border-radius: 10px;
 }
 
 /* About Section */
@@ -778,6 +805,11 @@ a {
   font-size: 1rem;
 }
 
+.form-group input[type="file"] {
+    border: none;
+    padding: 0;
+}
+
 .form-options {
   display: flex;
   justify-content: space-between;
@@ -889,6 +921,27 @@ a {
 .skill-item p {
   font-size: 0.9rem;
   color: var(--gray-color);
+}
+
+.skill-item-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.skill-item-buttons .edit-btn,
+.skill-item-buttons .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--primary-color);
+    transition: color 0.2s;
+}
+
+.skill-item-buttons .delete-btn {
+    color: var(--danger-color);
 }
 
 .profile-skills form {
