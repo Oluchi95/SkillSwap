@@ -278,7 +278,6 @@ a {
   margin-top: 20px;
 }
 
-
 /* Hero Section */
 .hero {
   background: linear-gradient(to right, rgba(108, 92, 231, 0.9), rgba(253, 121, 168, 0.6)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80');
@@ -357,18 +356,21 @@ a {
   display: flex;
   justify-content: center;
   margin-top: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .search-bar {
   display: flex;
   align-items: center;
   background-color: white;
-  padding: 0 8px;
+  padding: 0 15px;
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 700px;
-  margin-right: 10px;
+  max-width: 500px;
+  min-width: 250px;
+  flex: 1;
 }
 
 .search-bar i {
@@ -382,7 +384,7 @@ a {
   border: none;
   outline: none;
   flex: 1;
-  padding: 8px 0;
+  padding: 12px 0;
   font-size: 1rem;
 }
 
@@ -394,19 +396,20 @@ a {
   display: flex;
   align-items: center;
   background-color: white;
-  padding: 0 8px;
+  padding: 0 15px;
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  width: 30%;
-  margin-right: 10px;
+  min-width: 200px;
+  flex: 1;
 }
 
 .filter-bar select {
   border: none;
   outline: none;
   flex: 1;
-  text-align: center;
+  padding: 12px 0;
   font-size: 1rem;
+  cursor: pointer;
 }
 
 .filter-bar i {
@@ -423,8 +426,9 @@ a {
 }
 
 #search-btn {
-  padding: 10px 20px;
+  padding: 12px 25px;
   border-radius: 10px;
+  flex: 0 0 auto;
 }
 
 /* About Section */
@@ -577,6 +581,17 @@ a {
   font-weight: 600;
 }
 
+.category-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  background-color: #f0e6ff;
+  color: var(--primary-color);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
 /* Featured Skills Section */
 .featured-section {
   background-color: white;
@@ -592,7 +607,7 @@ a {
 
 .featured-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 25px;
 }
 
@@ -602,6 +617,7 @@ a {
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s;
+  position: relative;
 }
 
 .service-card:hover {
@@ -647,6 +663,13 @@ a {
 
 .service-content .contact-btn:hover {
   background: var(--primary-dark);
+}
+
+.no-results {
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 40px;
+  color: var(--gray-color);
 }
 
 /* How It Works Section */
@@ -1194,48 +1217,87 @@ a {
   background-color: #f0f4f8;
 }
 
+/* Public Profile Section */
+#public-profile-section {
+  display: none;
+}
+
 /* Responsive Styles */
+@media (max-width: 1024px) {
+  .featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .about-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .steps {
+    flex-wrap: wrap;
+  }
+  
+  .step {
+    flex: 1 1 300px;
+  }
+}
+
 @media (max-width: 768px) {
   .main-nav, .header-buttons {
     display: none;
   }
+  
   .hamburger {
     display: block;
   }
-  .categories-grid, .featured-grid, .about-cards, .steps {
+  
+  .categories-grid, .about-cards {
     grid-template-columns: 1fr;
   }
+  
   .profile-content {
     grid-template-columns: 1fr;
   }
+  
   .profile-header {
     flex-direction: column;
     text-align: center;
     gap: 20px;
   }
-  .search-bar {
+  
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .search-bar-container {
     flex-direction: column;
     align-items: stretch;
-    padding: 20px;
-    border-radius: 20px;
   }
-  .search-bar i, .search-bar input, .search-bar select, .search-bar button {
-    margin-bottom: 10px;
+  
+  .search-bar, .filter-bar {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  #search-btn {
     width: 100%;
   }
-  .search-bar button {
-    margin-left: 0;
-  }
+  
   .stats {
     flex-wrap: wrap;
     gap: 20px;
   }
+  
   .cta-buttons {
     flex-direction: column;
     gap: 15px;
   }
+  
   .footer-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
   }
 }
@@ -1244,10 +1306,25 @@ a {
   .hero h1 {
     font-size: 2.2rem;
   }
+  
   section {
     padding: 60px 0;
   }
+  
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+  
   .modal-content {
     padding: 20px;
+    width: 95%;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-links {
+    text-align: center;
   }
 }

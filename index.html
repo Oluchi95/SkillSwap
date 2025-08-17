@@ -75,7 +75,7 @@
             <p>
               Connect with fellow students to share knowledge, learn new skills, and build lasting relationships. From tutoring to creative projects. Find what you need or offer what you know in a trusted environment.
             </p>
-                        <div class="search-bar-container">
+            <div class="search-bar-container">
               <div class="search-bar">
                 <i class="fas fa-search"></i>
                 <input
@@ -221,7 +221,8 @@
             <a href="#" class="btn btn-link">View all <i class="fas fa-arrow-right"></i></a>
           </div>
           <div class="featured-grid" id="featured-grid">
-            </div>
+            <!-- Dynamic content will be inserted here -->
+          </div>
         </div>
       </section>
 
@@ -293,6 +294,19 @@
                 <div class="form-group">
                   <label for="skill-desc">Description:</label>
                   <textarea id="skill-desc"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="skill-category">Category:</label>
+                  <select id="skill-category" required>
+                    <option value="">Select a category</option>
+                    <option value="tutoring">Tutoring & Study Help</option>
+                    <option value="design">Graphic Design</option>
+                    <option value="programming">Programming</option>
+                    <option value="writing">Writing & Content</option>
+                    <option value="language">Language Exchange</option>
+                    <option value="music">Music & Arts</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
                 <div class="form-group">
                   <label for="skill-price">Price/Rate (e.g., 5000):</label>
